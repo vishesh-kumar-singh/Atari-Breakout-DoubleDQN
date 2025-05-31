@@ -28,9 +28,7 @@ class AtariWrapper:
         # Process the initial observation and create the first state stack.
         processed_frame = preprocess_frame(initial_obs)
 
-        # Since the model expects a stack of frames 4 frames so initialy pushing the same frame 4 times for ensuring correct input shape.
-        for _ in range(4):
-            self.frame_stack.push(processed_frame)
+        self.frame_stack.push(processed_frame)
         state = self.get_state()
 
         # Return the properly formatted state for the agent.
