@@ -2,6 +2,7 @@ import numpy as np
 from typing import Tuple
 import gymnasium as gym
 from gymnasium import spaces
+from gymnasium.envs.registration import register
 from Image_Processing_and_Frame_Stacking import FrameStack, preprocess_frame
 
 
@@ -35,24 +36,25 @@ class AtariWrapper:
         # Return the properly formatted state for the agent.
         return state
     
-    def step(self, action: int) -> Tuple[np.ndarray, float, bool, dict]:
+    def step(self, action: int) -> Tuple[np.ndarray, float, bool, bool, dict]:
         """Execute action with frame skipping"""
         # Convert agent action to environment action.
-        aget_action = action
+        agent_action = action
         # Execute the action multiple times to skip frames.
         total_reward = 0.0
         done = False
         for _ in range(self.frame_skip):
-            obs, reward, done, truncated, info = self.env.step(aget_action)
+            obs, reward, done, truncated, info = self.env.step(agent_action)
             total_reward += reward
+            
+            # Process the observation and add it to the frame stack.
+            processed_frame = preprocess_frame(obs)
+            self.frame_stack.push(processed_frame)
             
             # If the episode is done, break out of the loop.
             if done or truncated:
                 break
             
-            # Process the observation and add it to the frame stack.
-            processed_frame = preprocess_frame(obs)
-            self.frame_stack.push(processed_frame)
 
         # Accumulate rewards and process the final frame.
         self.state= self.get_state()
@@ -72,3 +74,9 @@ class AtariWrapper:
         """Close the environment"""
         # Properly close the Gym environment to free resources.
         self.env.close()
+
+register(
+    id="AtariWrapper-v0",
+    entry_point="Atari_Environment:AtariWrapper",
+    kwargs={"env_name": "BreakoutNoFrameskip-v4", "frame_skip": 4},
+)
