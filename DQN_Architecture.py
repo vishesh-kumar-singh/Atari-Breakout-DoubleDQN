@@ -33,6 +33,7 @@ class DQN(nn.Module):
         with torch.no_grad():
             dummy = torch.zeros(1, *shape)
             out = self.conv(dummy)
+            
             return int(torch.prod(torch.tensor(out.shape[1:])))
      
     
