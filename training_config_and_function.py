@@ -81,6 +81,4 @@ def train_agent():
         if mean_score >= config['target_score']:
             print(f"\nEnvironment solved in {episode} episodes! Average score: {mean_score:.2f}")
     
-    # Saving the trained model
-    agent.save_model()
-    return episode_rewards, mean_scores, losses
+    return agent,episode_rewards, mean_scores, losses

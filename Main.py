@@ -9,12 +9,16 @@ if __name__ == "__main__":
     print("Team: Runtime Terrors")
 
     # Execute the training process and collect results.
-    episode_rewards, mean_scores, losses = train_agent()
+    agent, episode_rewards, mean_scores, losses = train_agent()
 
     # Generate and display comprehensive visualizations
     plot_training_results(episode_rewards, mean_scores, losses)
 
     # Print completion message and file references.
     print('''Training is Completed.
-          The model weights are saved as model_weights.pth.
+          The model weights are being saved as model_weights.pth.
           And the plots of the results had been saved as png files.''')
+    
+    # Saving the trained model
+    agent.save_model()
+    print("Model Weights are saved")
