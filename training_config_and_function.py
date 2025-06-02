@@ -78,6 +78,7 @@ def train_agent():
         # Implement early stopping when target performance is achieved.
         if mean_score >= config['target_score']:
             print(f"\nEnvironment solved in {episode} episodes! Average score: {mean_score:.2f}")
-            break
-
+    
+    # Saving the trained model
+    agent.save_model()
     return episode_rewards, mean_scores, losses
