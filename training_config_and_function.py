@@ -9,7 +9,7 @@ config = {
     'beta_start': 0.4,  # PER importance sampling
     'max_episodes': 1000,  # Maximum number of episodes to run
     'target_score': 12.0,  # Mean score over 50 episodes
-    'logging_interval': 25,  # Logging interval
+    'logging_interval': 100,  # Logging interval
 }
 
 
@@ -36,43 +36,45 @@ def train_agent():
     total_steps = 0
 
     # Implement the main episode loop with proper environment interaction.
-    for episode in range(config['max_episodes']):
-        state = env.reset()
-        done = False
-        episode_reward = 0
-        episode_loss = []
+    for i in range(config['max_episodes']//config['logging_interval']):
+        print(f"Training for episode {i*config['logging_interval']} to {i*config['logging_interval']+config['logging_interval']}")
+        for episode in tqdm(range(config['logging_interval'])):
+            state = env.reset()
+            done = False
+            episode_reward = 0
+            episode_loss = []
 
-        while not done:
-            # Agent selects action using epsilon-greedy strategy.
-            action = agent.select_action(state)
+            while not done:
+                # Agent selects action using epsilon-greedy strategy.
+                action = agent.select_action(state)
 
-            # Environment takes a step and returns the next state, reward, done flag, truncated flag, and info.
-            next_state, reward, done, truncated, info = env.step(action)
+                # Environment takes a step and returns the next state, reward, done flag, truncated flag, and info.
+                next_state, reward, done, truncated, info = env.step(action)
 
-            # Handle experience storage, agent updates, and target network synchronization.
-            agent.store_transition(state, action, reward, next_state, done)
-            state = next_state
-            episode_reward += reward
-            total_steps += 1
+                # Handle experience storage, agent updates, and target network synchronization.
+                agent.store_transition(state, action, reward, next_state, done)
+                state = next_state
+                episode_reward += reward
+                total_steps += 1
 
-            loss = agent.update()
-            if loss is not None:
-                episode_loss.append(loss)
+                loss = agent.update()
+                if loss is not None:
+                    episode_loss.append(loss)
 
-            # Synchronize target network weights at regular intervals.
-            if total_steps % agent.update_target_freq == 0:
-                agent.update_target_network()
+                # Synchronize target network weights at regular intervals.
+                if total_steps % agent.update_target_freq == 0:
+                    agent.update_target_network()
 
-        # Monitor training progress with comprehensive logging and statistics.
-        scores_window.append(episode_reward)
-        mean_score = np.mean(scores_window)
-        avg_loss = np.mean(episode_loss) if episode_loss else 0
-        episode_rewards.append(episode_reward)
-        mean_scores.append(mean_score)
-        losses.append(avg_loss)
+            # Monitor training progress with comprehensive logging and statistics.
+            scores_window.append(episode_reward)
+            mean_score = np.mean(scores_window)
+            avg_loss = np.mean(episode_loss) if episode_loss else 0
+            episode_rewards.append(episode_reward)
+            mean_scores.append(mean_score)
+            losses.append(avg_loss)
 
-        if episode % config['logging_interval'] == 0:   
-            print(f"Episode {episode} | Reward: {episode_reward:.2f} | "
+
+        print(f"Episode {episode} | Reward: {episode_reward:.2f} | "
               f"Mean Score: {mean_score:.2f} | Loss: {avg_loss:.4f}")
 
         # Implement early stopping when target performance is achieved.
