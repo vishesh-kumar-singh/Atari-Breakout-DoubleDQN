@@ -78,8 +78,6 @@ class AdvancedDQNAgent:
         # Add the experience tuple to the prioritized replay buffer.
         self.replay_buffer.push(state, action, reward, next_state, done)
     
-    import torch.nn.functional as F
-
     def update(self) -> Optional[float]:
         """Perform learning update"""
         # Check if sufficient experiences are available for training.
