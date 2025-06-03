@@ -15,7 +15,7 @@ config = {
 
 import numpy as np
 from collections import deque
-from Agent_Implementation import DQNAgent
+from Agent_Implementation import AdvancedDQNAgent
 from Atari_Environment import AtariWrapper
 from tqdm import tqdm
 
@@ -24,9 +24,10 @@ def train_agent():
     
     # Initialize the Atari environment wrapper and DQN agent.
     env = AtariWrapper(env_name="BreakoutNoFrameskip-v4", frame_skip=4)
-    state_shape = env.observation_space.shape
+    state=env.reset()
+    state_shape = state.shape
     action_size = env.action_space.n
-    agent = DQNAgent(state_shape, action_size, config=config)
+    agent = AdvancedDQNAgent(state_shape, action_size, config=config)
 
     # Set up tracking variables for metrics and timing.
     episode_rewards = []
@@ -37,7 +38,7 @@ def train_agent():
 
     # Implement the main episode loop with proper environment interaction.
     for i in range(config['max_episodes']//config['logging_interval']):
-        print(f"Training for episode {i*config['logging_interval']} to {i*config['logging_interval']+config['logging_interval']}")
+        print(f"Training for episode {i*config['logging_interval']+1} to {i*config['logging_interval']+config['logging_interval']}")
         for episode in tqdm(range(config['logging_interval'])):
             state = env.reset()
             done = False
@@ -74,7 +75,7 @@ def train_agent():
             losses.append(avg_loss)
 
 
-        print(f"Episode {episode} | Reward: {episode_reward:.2f} | "
+        print(f"Episode {episode+1} | Reward: {episode_reward:.2f} | "
               f"Mean Score: {mean_score:.2f} | Loss: {avg_loss:.4f}")
 
         # Implement early stopping when target performance is achieved.

@@ -40,7 +40,9 @@ class AdvancedDQNAgent:
         self.config = config
         # Create policy and target networks with identical architectures.
         self.policy_net = DQN(self.state_shape, self.action_size)
+        self.policy_net.to(self.policy_net.device)
         self.target_net = DQN(self.state_shape, self.action_size)
+        self.target_net.to(self.target_net.device)
         # Initialize the target network with policy network weights.
         self.target_net.load_state_dict(self.policy_net.state_dict())
         # Set up the optimizer and prioritized replay buffer.

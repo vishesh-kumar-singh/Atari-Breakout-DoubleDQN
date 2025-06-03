@@ -4,7 +4,7 @@ import gymnasium as gym
 from gymnasium import spaces
 from gymnasium.envs.registration import register
 from Image_Processing_and_Frame_Stacking import FrameStack, preprocess_frame
-
+import ale_py
 
 class AtariWrapper:
     def __init__(self, env_name: str = "BreakoutNoFrameskip-v4", frame_skip: int = 4,rendering_mode: str = "rgb_array"):
@@ -15,6 +15,7 @@ class AtariWrapper:
 
         # Define the action space mapping for Breakout game.
         self.action_space = spaces.Discrete(4)     # 0: NOOP, 1: FIRE, 2: RIGHT, 3: LEFT
+        self.observation_space = self.env.observation_space
 
         # Store frame skipping parameter for temporal efficiency.
         self.frame_skip = frame_skip
@@ -72,9 +73,3 @@ class AtariWrapper:
         """Close the environment"""
         # Properly close the Gym environment to free resources.
         self.env.close()
-
-register(
-    id="AtariWrapper-v0",
-    entry_point="Atari_Environment:AtariWrapper",
-    kwargs={"env_name": "BreakoutNoFrameskip-v4", "frame_skip": 4},
-)
