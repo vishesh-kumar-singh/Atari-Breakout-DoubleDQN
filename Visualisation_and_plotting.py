@@ -10,7 +10,6 @@ def plot_training_results(episode_rewards, mean_scores, losses):
 
     # Plot episode rewards with rolling mean to show learning progress.
     axs[0].plot(episode_rewards, label='Episode Rewards', color='blue', alpha=0.6)
-    axs[0].set_title('Episode Rewards Over Time')
     axs[0].set_ylabel('Rewards')
     axs[0].legend()
     axs[0].grid(True)
@@ -18,15 +17,13 @@ def plot_training_results(episode_rewards, mean_scores, losses):
     # Display mean score progression with target achievement line.
     axs[1].plot(mean_scores, label='Mean Scores', color='green', alpha=0.6)
     axs[1].axhline(y=30, color='red', linestyle='--', label='Mean Human Score (30)')
-    axs[1].set_title('Mean Scores Over Time')
     axs[1].set_ylabel('Mean Score')
     axs[1].legend()
     axs[1].grid(True)
 
     # Show training loss evolution to monitor learning stability.
     axs[2].plot(losses, label='Training Loss', color='orange', alpha=0.6)
-    axs[2].set_title('Training Loss Over Time')
-    axs[2].set_xlabel('Episode')
+    axs[2].set_xlabel('Episodes')
     axs[2].set_ylabel('Loss')
     axs[2].legend()
     axs[2].grid(True)
