@@ -88,14 +88,16 @@ class AdvancedDQNAgent:
 
         # Sample a batch from the prioritized replay buffer.
         experiences, indices, weights = self.replay_buffer.sample(self.config['batch_size'])
-        states, actions, rewards, next_states, dones = experiences
+        if not isinstance(experiences, (list, tuple)) or not all(isinstance(e, (list, tuple)) and len(e) == 5 for e in experiences):
+            return None
+        states, actions, rewards, next_states, dones = zip(*experiences)
 
         # Convert experience components to tensors and move to device.
         device = self.policy_net.device
-        states = torch.tensor(states, dtype=torch.float32).to(device)
+        states = torch.tensor(np.array(states), dtype=torch.float32).to(device)
         actions = torch.tensor(actions, dtype=torch.long).unsqueeze(1).to(device)
         rewards = torch.tensor(rewards, dtype=torch.float32).unsqueeze(1).to(device)
-        next_states = torch.tensor(next_states, dtype=torch.float32).to(device)
+        next_states = torch.tensor(np.array(next_states), dtype=torch.float32).to(device)
         dones = torch.tensor(dones, dtype=torch.float32).unsqueeze(1).to(device)
         weights = torch.tensor(weights, dtype=torch.float32).unsqueeze(1).to(device)
 

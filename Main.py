@@ -21,5 +21,5 @@ if __name__ == "__main__":
           And the plots of the results had been saved as png files.''')
     
     # Saving the trained model
-    # agent.save_model()
-    # print("Model Weights are saved")
+    agent.save_model()
+    print("Model Weights are saved")

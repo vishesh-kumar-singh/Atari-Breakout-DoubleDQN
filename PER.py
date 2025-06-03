@@ -45,12 +45,12 @@ class SumTree:
     def add(self, priority: float, data: object) -> None:
         """Store experience with priority"""
         # Add data to tree and propagate changes
-        idx = self.write + self.capacity - 1
-        self.data[self.write] = data
+        idx = self.write_idx + self.capacity - 1
+        self.data[self.write_idx] = data
         self.update(idx, priority)
-        self.write += 1
-        if self.write >= self.capacity:
-            self.write = 0
+        self.write_idx += 1
+        if self.write_idx >= self.capacity:
+            self.write_idx = 0
         if self.n_entries < self.capacity:
             self.n_entries += 1
         
@@ -111,7 +111,7 @@ class PrioritizedReplayBuffer:
             if max_priority == 0:
                 max_priority = 1.0
 
-            self.tree.add(float(max_priority), experience)
+        self.tree.add(float(max_priority), experience)
     
     def sample(self, batch_size: int) -> Tuple[List, np.ndarray, np.ndarray]:
         """Sample batch with importance sampling weights"""

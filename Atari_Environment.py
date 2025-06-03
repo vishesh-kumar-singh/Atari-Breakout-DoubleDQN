@@ -5,6 +5,10 @@ from gymnasium import spaces
 from gymnasium.envs.registration import register
 from Image_Processing_and_Frame_Stacking import FrameStack, preprocess_frame
 import ale_py
+import os
+
+os.environ["__NV_PRIME_RENDER_OFFLOAD"] = "1"
+os.environ["__GLX_VENDOR_LIBRARY_NAME"] = "nvidia"
 
 class AtariWrapper:
     def __init__(self, env_name: str = "BreakoutNoFrameskip-v4", frame_skip: int = 4,rendering_mode: str = "rgb_array"):

@@ -9,7 +9,7 @@ config = {
     'beta_start': 0.4,  # PER importance sampling
     'max_episodes': 1000,  # Maximum number of episodes to run
     'target_score': 12.0,  # Mean score over 50 episodes
-    'logging_interval': 100,  # Logging interval
+    'logging_interval': 25,  # Logging interval
 }
 
 
@@ -75,7 +75,7 @@ def train_agent():
             losses.append(avg_loss)
 
 
-        print(f"Episode {episode+1} | Reward: {episode_reward:.2f} | "
+        print(f"Episode {(i+1)*config['logging_interval']} | Reward: {episode_reward:.2f} | "
               f"Mean Score: {mean_score:.2f} | Loss: {avg_loss:.4f}")
 
         # Implement early stopping when target performance is achieved.

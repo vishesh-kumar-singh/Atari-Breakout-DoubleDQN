@@ -17,6 +17,7 @@ def plot_training_results(episode_rewards, mean_scores, losses):
     # Display mean score progression with target achievement line.
     axs[1].plot(mean_scores, label='Mean Scores', color='green', alpha=0.6)
     axs[1].axhline(y=30, color='red', linestyle='--', label='Mean Human Score (30)')
+    axs[1].axhline(y=30, color='red', linestyle='--', label='Target Score (12)')
     axs[1].set_ylabel('Mean Score')
     axs[1].legend()
     axs[1].grid(True)
