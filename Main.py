@@ -1,4 +1,4 @@
-from training_config_and_function import train_agent
+from training_function import train_agent
 from Visualisation_and_plotting import plot_training_results
 
 

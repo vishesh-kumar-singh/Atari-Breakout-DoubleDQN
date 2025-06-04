@@ -1,8 +1,7 @@
 import numpy as np
 from typing import Tuple
-import gymnasium as gym
-from gymnasium import spaces
-from gymnasium.envs.registration import register
+import gym as gym
+from gym import spaces
 from Image_Processing_and_Frame_Stacking import FrameStack, preprocess_frame
 import ale_py
 import os

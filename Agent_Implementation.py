@@ -2,27 +2,32 @@ from typing import Optional
 import numpy as np
 import torch
 import torch.nn as nn
-from training_config_and_function import config
+from config import config
 from DQN_Architecture import DQN
 from PER import PrioritizedReplayBuffer
 
 def compute_double_dqn_loss(policy_net, target_net, states, actions, 
-                              rewards, next_states, dones, gamma, is_weights):
+                             rewards, next_states, dones, gamma, is_weights):
     """Compute Double DQN loss with importance sampling"""
-    
-    # Extract Q-values for the actions that were actually taken.
+
+    # Current Q-values from policy network for the taken actions
     q_values = policy_net(states).gather(1, actions)
-    # Use the policy network to select the best next actions.
+
+    # Select next actions using the policy network (Double DQN trick)
     next_actions = policy_net(next_states).argmax(dim=1, keepdim=True)
-    # Evaluate those selected actions using the target network.
+
+    # Evaluate selected actions using the target network
     next_q_values = target_net(next_states).gather(1, next_actions)
-    # Compute target Q-values using the Bellman equation.
+
+    # Bellman target with detached target network
     target_q_values = rewards + (1 - dones) * gamma * next_q_values
-    # Calculate temporal difference errors for priority updates.
-    td_errors = q_values - target_q_values
+    target_q_values = target_q_values.detach()  # Detach to stop gradients
+
+    # Compute TD error (target - prediction)
+    td_errors = target_q_values - q_values
+    
     # Apply importance sampling weights if provided to correct sampling bias.
     if is_weights is not None:
-        # Scale the loss by the importance sampling weights.
         loss = (td_errors ** 2 * is_weights).mean()
     else:
         # Compute the mean squared error loss without importance sampling.

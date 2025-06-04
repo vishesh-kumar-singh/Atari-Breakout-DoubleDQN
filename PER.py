@@ -142,6 +142,7 @@ class PrioritizedReplayBuffer:
         if N == 0:
             raise ValueError("Cannot sample from an empty buffer.")
         
+        priorities = np.maximum(priorities, 1e-6)  # Ensure no zero priorities for numerical stability
         probs = priorities / total_priority
         weights = (N * probs) ** (-beta)
         max_weight = np.max(weights)
