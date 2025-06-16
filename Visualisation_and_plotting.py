@@ -29,7 +29,7 @@ def plot_training_results(episode_rewards, mean_scores, losses):
     axs[2].legend()
     axs[2].grid(True)
     plt.tight_layout(rect=[0, 0.03, 1, 0.95])
-    plt.savefig('training_results.png')
+    plt.savefig('fine_tuned_results.png')
     plt.show()
 
 
@@ -43,5 +43,5 @@ def plot_training_results(episode_rewards, mean_scores, losses):
 
     # Add proper labeling, legends, and save the results.
     plt.tight_layout(rect=[0, 0.03, 1, 0.95])
-    plt.savefig('training_results_overview.png')
+    plt.savefig('finetuned_results_overview.png')
     plt.show()
