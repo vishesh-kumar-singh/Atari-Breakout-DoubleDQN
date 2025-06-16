@@ -5,15 +5,14 @@ from Atari_Environment import AtariWrapper
 from config import config
 from tqdm import tqdm
 
-def train_agent():
+# Initialize the Atari environment wrapper and DQN agent.
+env = AtariWrapper(env_name="BreakoutNoFrameskip-v4", frame_skip=4)
+state=env.reset()
+state_shape = state.shape
+action_size = env.action_space.n
+def train_agent(agent=AdvancedDQNAgent(state_shape, action_size, config=config),env=env):
     """Main training loop with comprehensive monitoring"""
     
-    # Initialize the Atari environment wrapper and DQN agent.
-    env = AtariWrapper(env_name="BreakoutNoFrameskip-v4", frame_skip=4)
-    state=env.reset()
-    state_shape = state.shape
-    action_size = env.action_space.n
-    agent = AdvancedDQNAgent(state_shape, action_size, config=config)
 
     # Set up tracking variables for metrics and timing.
     episode_rewards = []
@@ -51,6 +50,7 @@ def train_agent():
                 # Synchronize target network weights at regular intervals.
                 if total_steps % agent.update_target_freq == 0:
                     agent.update_target_network()
+            # agent.decay_epsilon()
 
             # Monitor training progress with comprehensive logging and statistics.
             scores_window.append(episode_reward)

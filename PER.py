@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 from typing import Tuple, List
 import random
+from config import config
 
 class SumTree:
     def __init__(self, capacity: int):
@@ -70,6 +71,43 @@ class SumTree:
         data_idx = idx - self.capacity + 1
         return idx, self.tree[idx], self.data[data_idx]
     
+
+from collections import deque
+
+class NStepBuffer:
+    def __init__(self, n: int, gamma: float):
+        self.n = n
+        self.gamma = gamma
+        self.buffer = deque()
+
+    def push(self, state, action, reward, next_state, done):
+        self.buffer.append((state, action, reward, next_state, done))
+        if len(self.buffer) < self.n:
+            return None
+
+        return self._get_n_step_transition()
+
+    def _get_n_step_transition(self):
+        state, action = self.buffer[0][0], self.buffer[0][1]
+        R = 0
+        for i in range(self.n):
+            r, d = self.buffer[i][2], self.buffer[i][4]
+            R += (self.gamma ** i) * r
+            if d:
+                break
+        next_state, done = self.buffer[-1][3], self.buffer[-1][4]
+        self.buffer.popleft()
+        return state, action, R, next_state, done
+
+    def flush(self):
+        transitions = []
+        while len(self.buffer) > 0:
+            trans = self._get_n_step_transition()
+            if trans:
+                transitions.append(trans)
+        return transitions
+
+    
 class PrioritizedReplayBuffer:
     
     def __init__(self, capacity: int, alpha: float = 0.6, beta_start: float = 0.4):
@@ -87,6 +125,7 @@ class PrioritizedReplayBuffer:
         self.frame_count = 0
 
         self.epsilon = 1e-6  # Small value for numerical stability
+
     
     def _get_beta(self) -> float:
         """Calculate current beta value (anneals to 1.0)"""

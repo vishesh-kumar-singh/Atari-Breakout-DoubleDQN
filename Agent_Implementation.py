@@ -5,6 +5,7 @@ import torch.nn as nn
 from config import config
 from DQN_Architecture import DQN
 from PER import PrioritizedReplayBuffer
+from PER import NStepBuffer
 
 def compute_double_dqn_loss(policy_net, target_net, states, actions, 
                              rewards, next_states, dones, gamma, is_weights):
@@ -58,12 +59,15 @@ class AdvancedDQNAgent:
         # Configure exploration parameters for epsilon-greedy strategy.
         self.epsilon = 1.0  # Start with full exploration
         self.epsilon_min = 0.01  # Minimum exploration rate
-        self.epsilon_decay = (1.0 - self.epsilon_min) / config['max_episodes']
+        self.epsilon_decay = (1.0 - self.epsilon_min) / (config['max_episodes'])
         self.update_target_freq = config['target_update_freq']
+
+        self.n_step = config['n_step']
+        self.n_step_buffer = NStepBuffer(self.n_step, config['gamma'])
+
     
     def select_action(self, state: np.ndarray) -> int:
         """Epsilon-greedy action selection"""
-        # Calculate current epsilon value using exponential decay schedule.
         self.decay_epsilon()
         # Choose between random exploration and greedy exploitation.
         if np.random.rand() < self.epsilon:
@@ -71,7 +75,7 @@ class AdvancedDQNAgent:
             return np.random.randint(self.action_size)
         # For greedy actions, use the policy network to select best action.
         else:
-            # Convert state to tensor and move to the appropriate device.
+        # Convert state to tensor and move to the appropriate device.
             state_tensor = torch.tensor(state, dtype=torch.float32).unsqueeze(0)
             state_tensor = state_tensor.to(self.policy_net.device)
             # Get Q-values from the policy network and select action with max Q-value.
@@ -81,9 +85,15 @@ class AdvancedDQNAgent:
 
 
     def store_transition(self, state, action, reward, next_state, done):
-        """Store experience in replay buffer"""
-        # Add the experience tuple to the prioritized replay buffer.
-        self.replay_buffer.push(state, action, reward, next_state, done)
+        transition = self.n_step_buffer.push(state, action, reward, next_state, done)
+
+        if transition:
+            self.replay_buffer.push(*transition)
+
+        if done:
+            # flush remaining n-step transitions
+            for t in self.n_step_buffer.flush():
+                self.replay_buffer.push(*t)
     
     def update(self) -> Optional[float]:
         """Perform learning update"""
@@ -143,3 +153,4 @@ class AdvancedDQNAgent:
         """Load model weights from file"""
         # Load the policy network state dictionary from the specified filepath.
         self.policy_net.load_state_dict(torch.load(filepath))
+        self.update_target_network()

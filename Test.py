@@ -1,15 +1,19 @@
 from Agent_Implementation import AdvancedDQNAgent
 from Atari_Environment import AtariWrapper
 
+
 env = AtariWrapper(env_name="BreakoutNoFrameskip-v4", frame_skip=4,rendering_mode='human')
 state=env.reset()
 state_shape = state.shape
 action_size = env.action_space.n
 agent=AdvancedDQNAgent(state_shape=state_shape,action_size=action_size)
 print("Loading Model")
-agent.load_model()
+agent.load_model(filepath="model_weights.pth")
 print("Model Loaded")
-agent.epsilon=0
+agent.epsilon=0.0
+agent.epsilon_min=0.0
+
+
 for _ in range (5):
     state = env.reset()
     done = False
@@ -23,4 +27,5 @@ for _ in range (5):
 
         episode_reward += reward
         state = next_state
+
     print(f"Episode Reward: {episode_reward}")
